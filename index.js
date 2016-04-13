@@ -122,6 +122,9 @@ function Reporter(runner, mochaOptions) {
     if(test.timedOut) stats.timeouts++;
     failures.push(test);
 
+    that.writeFailures(failures);
+    failures = [];
+
     that.writeTest(test);
   });
 
@@ -132,8 +135,6 @@ function Reporter(runner, mochaOptions) {
   });
 
   runner.on('end', function() {
-    //console.log(runner);
-
     stats.end = new Date;
     stats.duration = stats.end - stats.start;
 
@@ -228,10 +229,6 @@ Reporter.prototype.writeFailures = function(failures) {
       return line.trim();
     });
 
-    this.writeLine();
-    this.writeLine(color('error title', '%d) %s'), i + 1, test.fullTitle());
-    this.writeLine();
-
     this.indentation++;
     message.split('\n').forEach(function(messageLine) {
       this.writeLine(color('error message', '%s'), messageLine);
@@ -267,6 +264,8 @@ Reporter.prototype.writeFailures = function(failures) {
             lineNumber = parsedStack[i].getLineNumber(),
             columnNumber = parsedStack[i].getColumnNumber();
 
+          var isNodeModule = fileName.indexOf('node_modules/') > -1;
+
           if(~this.files.indexOf(fileName)) {
             isTestFiles = true;
             isFilesBeforeTests = false;
@@ -274,7 +273,7 @@ Reporter.prototype.writeFailures = function(failures) {
             isTestFiles = false;
           }
 
-          if((isTestFiles || isFilesBeforeTests) && (!this.options.stackExclude || !minimatch(fileName, this.options.stackExclude))) {
+          if(!isNodeModule && (isTestFiles || isFilesBeforeTests)) {
             this.writeStackLine(line, fileName, lineNumber, columnNumber);
           }
         }, this);
