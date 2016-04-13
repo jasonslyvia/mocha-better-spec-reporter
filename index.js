@@ -122,10 +122,10 @@ function Reporter(runner, mochaOptions) {
     if(test.timedOut) stats.timeouts++;
     failures.push(test);
 
+    that.writeTest(test);
+
     that.writeFailures(failures);
     failures = [];
-
-    that.writeTest(test);
   });
 
   runner.on('pending', function(test) {
