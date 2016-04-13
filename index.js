@@ -182,23 +182,19 @@ Reporter.prototype.writeLine = function() {
 
 Reporter.prototype.writeStat = function(stats) {
   this.indentation++;
-  if(stats.suites) {
-    this.writeLine(color('stat', 'Executed %d tests in %d suites in %s'), stats.tests, stats.suites, formatTime(stats.duration));
-  } else {
-    this.writeLine(color('stat', 'Executed %d tests in %s'), stats.tests, formatTime(stats.duration));
-  }
+  this.writeLine(color('stat', '共执行 %d 个用例，用时 %s'), stats.tests, formatTime(stats.duration));
   this.indentation++;
   if(stats.tests == stats.passes)
-    this.writeLine(color('pass', 'All passes'));
+    this.writeLine(color('pass', '全部通过'));
   else {
-    this.writeLine(color('pass', '%d passes'), stats.passes);
+    this.writeLine(color('pass', '%d 通过'), stats.passes);
     if(stats.pending)
-      this.writeLine(color('pending', '%d pending'), stats.pending);
+      this.writeLine(color('pending', '%d 未执行'), stats.pending);
     if(stats.failures) {
       if(stats.timeouts)
-        this.writeLine(color('fail', '%d failed (%d timed out)'), stats.failures, stats.timeouts);
+        this.writeLine(color('fail', '%d 失败 (%d 超时)'), stats.failures, stats.timeouts);
       else
-        this.writeLine(color('fail', '%d failed'), stats.failures);
+        this.writeLine(color('fail', '%d 失败'), stats.failures);
     }
   }
   this.indentation -= 2;
@@ -264,7 +260,7 @@ Reporter.prototype.writeFailures = function(failures) {
             lineNumber = parsedStack[i].getLineNumber(),
             columnNumber = parsedStack[i].getColumnNumber();
 
-          var isNodeModule = fileName.indexOf('node_modules/') > -1;
+          var isNodeModule = fileName && fileName.indexOf('node_modules/') > -1;
 
           if(~this.files.indexOf(fileName)) {
             isTestFiles = true;
